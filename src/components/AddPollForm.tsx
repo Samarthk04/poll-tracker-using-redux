@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addPoll } from '../redux/pollsSlice';
 
-const AddPollForm: React.FC = () => {
+// Define the props interface to accept the setShowForm function
+interface AddPollFormProps {
+  setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const AddPollForm: React.FC<AddPollFormProps> = ({ setShowForm }) => {
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '']);
   const dispatch = useDispatch();
@@ -39,15 +44,22 @@ const AddPollForm: React.FC = () => {
     // Ensure question and all options are not empty
     if (question.trim() && options.every(opt => opt.trim())) {
       dispatch(addPoll({ question, options: options.map(opt => opt.trim()) }));
-      // Reset form fields
-      setQuestion('');
-      setOptions(['', '']);
+      setShowForm(false); // Hide form on successful submission
     }
   };
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-gray-800">Create a New Poll</h3>
+    <div className="bg-white shadow-lg rounded-lg p-6 mb-8 relative">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold text-gray-800">Create a New Poll</h3>
+        <button
+            onClick={() => setShowForm(false)}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Close form"
+        >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="question" className="block text-sm font-medium text-gray-700">

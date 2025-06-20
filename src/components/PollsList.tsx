@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
+import type { RootState } from '../redux/store'; // Corrected import path
 import PollCard from './PollCard';
 
 const PollsList: React.FC = () => {
@@ -8,7 +8,7 @@ const PollsList: React.FC = () => {
   const polls = useSelector((state: RootState) => state.polls.polls);
 
   useEffect(() => {
-    // Find the first poll the user hasn't voted on
+    // Find the first poll the user hasn't voted on and scroll to it
     const firstUnansweredPoll = polls.find(poll => !poll.userVoted);
     if (firstUnansweredPoll) {
       const pollElement = document.getElementById(`poll-${firstUnansweredPoll.id}`);

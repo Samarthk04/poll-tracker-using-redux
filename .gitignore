@@ -39,7 +39,6 @@ build/
 # OS generated files
 Thumbs.db
 
-# Lock files (optional, depending on your strategy)
 package-lock.json
 yarn.lock
 pnpm-lock.yaml

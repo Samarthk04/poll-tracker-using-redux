@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PollsList from './components/PollList';
+import PollsList from './components/PollsList';
 import AddPollForm from './components/AddPollForm';
 
 const App: React.FC = () => {

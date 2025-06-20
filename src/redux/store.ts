@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import pollsReducer from './slices/pollsSlice';
+import pollsReducer from './pollsSlice'; // Correct path to the slice file
 
 /**
  * The main Redux store for the application.
