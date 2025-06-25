@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, current } from '@reduxjs/toolkit';
 
 export interface PollOption {
   id: number;
@@ -18,6 +18,65 @@ interface PollsState {
   polls: Poll[];
   userVotes: { [pollId: number]: number }; 
 }
+
+const defaultPolls: Poll[] = [
+    {
+      id: 1,
+      question: 'What is your favorite programming language?',
+      options: [
+        { id: 1, text: 'JavaScript', votes: 5 },
+        { id: 2, text: 'Python', votes: 10 },
+        { id: 3, text: 'Java', votes: 3 },
+        { id: 4, text: 'TypeScript', votes: 8 },
+      ],
+      totalVotes: 26,
+      userVoted: null,
+    },
+    {
+        id: 2,
+        question: 'Which frontend framework do you prefer?',
+        options: [
+            { id: 1, text: 'React', votes: 15 },
+            { id: 2, text: 'Vue', votes: 7 },
+            { id: 3, text: 'Angular', votes: 4 },
+            { id: 4, text: 'Svelte', votes: 2 },
+        ],
+        totalVotes: 28,
+        userVoted: null,
+    },
+];
+
+
+/**
+ * Loads the list of polls from localStorage.
+ * @returns An array of Poll objects.
+ */
+const loadPolls = (): Poll[] => {
+    try {
+        const serializedPolls = localStorage.getItem('polls');
+        if (serializedPolls === null) {
+            return defaultPolls; // Return default polls if nothing is saved
+        }
+        return JSON.parse(serializedPolls);
+    } catch (err) {
+        console.error("Could not load polls from localStorage", err);
+        return defaultPolls;
+    }
+}
+
+/**
+ * Saves the entire list of polls to localStorage.
+ * @param polls - The array of polls to save.
+ */
+const savePolls = (polls: Poll[]) => {
+    try {
+        const serializedPolls = JSON.stringify(polls);
+        localStorage.setItem('polls', serializedPolls);
+    } catch (err) {
+        console.error("Could not save polls to localStorage", err);
+    }
+};
+
 
 /**
  * Loads the user's voting history from localStorage.
@@ -50,36 +109,10 @@ const saveUserVotes = (userVotes: { [pollId: number]: number }) => {
 };
 
 const initialState: PollsState = {
-  polls: [
-    {
-      id: 1,
-      question: 'Favorite programming language?',
-      options: [
-        { id: 1, text: 'JavaScript', votes: 5 },
-        { id: 2, text: 'Python', votes: 10 },
-        { id: 3, text: 'Java', votes: 3 },
-        { id: 4, text: 'TypeScript', votes: 8 },
-      ],
-      totalVotes: 26,
-      userVoted: null,
-    },
-    {
-        id: 2,
-        question: 'Which frontend framework do you prefer?',
-        options: [
-            { id: 1, text: 'React', votes: 15 },
-            { id: 2, text: 'Vue', votes: 7 },
-            { id: 3, text: 'Angular', votes: 4 },
-            { id: 4, text: 'Svelte', votes: 2 },
-        ],
-        totalVotes: 28,
-        userVoted: null,
-    },
-  ],
+  polls: loadPolls(),
   userVotes: loadUserVotes(),
 };
 
-// Sync initial poll state with loaded votes from localStorage
 initialState.polls.forEach(poll => {
     if (initialState.userVotes[poll.id]) {
         poll.userVoted = initialState.userVotes[poll.id];
@@ -102,10 +135,10 @@ const pollsSlice = createSlice({
           poll.userVoted = optionId; 
           state.userVotes[pollId] = optionId; 
           saveUserVotes(state.userVotes); 
+          savePolls(current(state).polls);
         }
       }
     },
-
     addPoll: (state, action: PayloadAction<{ question: string; options: string[] }>) => {
       const { question, options } = action.payload;
       const newPoll: Poll = {
@@ -116,6 +149,7 @@ const pollsSlice = createSlice({
         userVoted: null,
       };
       state.polls.push(newPoll);
+      savePolls(current(state).polls);
     },
   },
 });
