@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Define the structure of a poll option and a single poll
 export interface PollOption {
   id: number;
   text: string;
@@ -12,13 +11,12 @@ export interface Poll {
   question: string;
   options: PollOption[];
   totalVotes: number;
-  userVoted: number | null; // Stores the optionId if the user has voted
+  userVoted: number | null; 
 }
 
-// Define the shape of the polls state
 interface PollsState {
   polls: Poll[];
-  userVotes: { [pollId: number]: number }; // Maps pollId to the voted optionId
+  userVotes: { [pollId: number]: number }; 
 }
 
 /**
@@ -51,12 +49,11 @@ const saveUserVotes = (userVotes: { [pollId: number]: number }) => {
   }
 };
 
-// Initial state with some example polls
 const initialState: PollsState = {
   polls: [
     {
       id: 1,
-      question: 'What is your favorite programming language?',
+      question: 'Favorite programming language?',
       options: [
         { id: 1, text: 'JavaScript', votes: 5 },
         { id: 2, text: 'Python', votes: 10 },
@@ -93,28 +90,22 @@ const pollsSlice = createSlice({
   name: 'polls',
   initialState,
   reducers: {
-    /**
-     * Handles a user voting on a poll.
-     */
     vote: (state, action: PayloadAction<{ pollId: number; optionId: number }>) => {
       const { pollId, optionId } = action.payload;
       const poll = state.polls.find((p) => p.id === pollId);
 
-      // Only allow voting if the user has not already voted on this poll
       if (poll && poll.userVoted === null) {
         const option = poll.options.find((o) => o.id === optionId);
         if (option) {
           option.votes += 1;
           poll.totalVotes += 1;
-          poll.userVoted = optionId; // Mark that the user has voted
-          state.userVotes[pollId] = optionId; // Update user votes history
-          saveUserVotes(state.userVotes); // Persist to localStorage
+          poll.userVoted = optionId; 
+          state.userVotes[pollId] = optionId; 
+          saveUserVotes(state.userVotes); 
         }
       }
     },
-    /**
-     * Adds a new poll to the state.
-     */
+
     addPoll: (state, action: PayloadAction<{ question: string; options: string[] }>) => {
       const { question, options } = action.payload;
       const newPoll: Poll = {

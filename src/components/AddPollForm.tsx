@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addPoll } from '../redux/pollsSlice';
 
-// Define the props interface to accept the setShowForm function
 interface AddPollFormProps {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -12,9 +11,6 @@ const AddPollForm: React.FC<AddPollFormProps> = ({ setShowForm }) => {
   const [options, setOptions] = useState(['', '']);
   const dispatch = useDispatch();
 
-  /**
-   * Updates the text of a specific option field.
-   */
   const handleOptionChange = (index: number, value: string) => {
     const newOptions = [...options];
     newOptions[index] = value;

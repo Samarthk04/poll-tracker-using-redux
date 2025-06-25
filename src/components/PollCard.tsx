@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { vote, Poll as PollType } from '../store/slices/pollsSlice';
+import { vote, Poll as PollType } from '../redux/pollsSlice';
 
 interface PollCardProps {
   poll: PollType;

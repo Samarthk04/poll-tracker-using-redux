@@ -12,7 +12,6 @@ const App: React.FC = () => {
           <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">
             Live Poll Voting App
           </h1>
-          <p className="text-gray-600 mt-2">Cast your vote and see real-time results!</p>
         </div>
       </header>
       <main className="container mx-auto px-4 py-8">
@@ -28,11 +27,8 @@ const App: React.FC = () => {
               </button>
             </div>
           )}
-
-          {/* Conditionally render the form and pass down the state setter */}
           {showForm && <AddPollForm setShowForm={setShowForm} />}
 
-          {/* List of all polls */}
           <PollsList />
         </div>
       </main>
