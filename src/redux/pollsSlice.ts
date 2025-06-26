@@ -46,7 +46,7 @@ const defaultPolls: Poll[] = [
 
 
 /**
- * Loads the list of polls from localStorage.
+ * load the list of polls from localStorage.
  * @returns An array of Poll objects.
  */
 const loadPolls = (): Poll[] => {
@@ -63,7 +63,7 @@ const loadPolls = (): Poll[] => {
 }
 
 /**
- * Saves the entire list of polls to localStorage.
+ * save the entire list of polls to localStorage.
  * @param polls - The array of polls to save.
  */
 const savePolls = (polls: Poll[]) => {
@@ -77,7 +77,7 @@ const savePolls = (polls: Poll[]) => {
 
 
 /**
- * Loads the user's voting history from localStorage.
+ * to load the user's voting history from localStorage.
  * @returns An object mapping poll IDs to the user's voted option ID.
  */
 const loadUserVotes = (): { [pollId: number]: number } => {
@@ -94,7 +94,7 @@ const loadUserVotes = (): { [pollId: number]: number } => {
 };
 
 /**
- * Saves the user's voting history to localStorage.
+ * saving the user's voting history to localStorage.
  * @param userVotes - The user's votes to save.
  */
 const saveUserVotes = (userVotes: { [pollId: number]: number }) => {
@@ -129,18 +129,14 @@ const pollsSlice = createSlice({
           const newOption = poll.options.find((o) => o.id === optionId);
   
           if (newOption) {
-              // If user has already voted, undo the previous vote
               if (poll.userVoted !== null && poll.userVoted !== optionId) {
                   const oldOption = poll.options.find((o) => o.id === poll.userVoted);
                   if (oldOption) {
                       oldOption.votes -= 1;
                   }
               } else if (poll.userVoted === null) {
-                  // If it's a new vote, increment total votes
                   poll.totalVotes += 1;
               }
-  
-              // Apply the new vote if it's different from the current one
               if (poll.userVoted !== optionId) {
                 newOption.votes += 1;
                 poll.userVoted = optionId;
