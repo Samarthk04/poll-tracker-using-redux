@@ -11,12 +11,12 @@ export interface Poll {
   question: string;
   options: PollOption[];
   totalVotes: number;
-  userVoted: number | null;
+  userVoted: number | null; 
 }
 
 interface PollsState {
   polls: Poll[];
-  userVotes: { [pollId: number]: number };
+  userVotes: { [pollId: number]: number }; 
 }
 
 const defaultPolls: Poll[] = [
@@ -47,13 +47,13 @@ const defaultPolls: Poll[] = [
 
 /**
  * load the list of polls from localStorage.
- * @returns An array of Poll objects.
+ * @returns An array of poll objects.
  */
 const loadPolls = (): Poll[] => {
     try {
         const serializedPolls = localStorage.getItem('polls');
         if (serializedPolls === null) {
-            return defaultPolls; // Return default polls if nothing is saved
+            return defaultPolls; 
         }
         return JSON.parse(serializedPolls);
     } catch (err) {
@@ -63,8 +63,8 @@ const loadPolls = (): Poll[] => {
 }
 
 /**
- * save the entire list of polls to localStorage.
- * @param polls - The array of polls to save.
+ * save the entire list of polls to localstorage.
+ * @param polls - array of polls to save.
  */
 const savePolls = (polls: Poll[]) => {
     try {
@@ -77,8 +77,8 @@ const savePolls = (polls: Poll[]) => {
 
 
 /**
- * to load the user's voting history from localStorage.
- * @returns An object mapping poll IDs to the user's voted option ID.
+ * load the user's voting history from localstorage.
+ * @returns mapping poll IDs to the user's voted option ID.
  */
 const loadUserVotes = (): { [pollId: number]: number } => {
   try {
@@ -94,8 +94,8 @@ const loadUserVotes = (): { [pollId: number]: number } => {
 };
 
 /**
- * saving the user's voting history to localStorage.
- * @param userVotes - The user's votes to save.
+ * save the user's voting history to localStorage.
+ * @param userVotes 
  */
 const saveUserVotes = (userVotes: { [pollId: number]: number }) => {
   try {
@@ -137,18 +137,18 @@ const pollsSlice = createSlice({
               } else if (poll.userVoted === null) {
                   poll.totalVotes += 1;
               }
+  
               if (poll.userVoted !== optionId) {
                 newOption.votes += 1;
                 poll.userVoted = optionId;
                 state.userVotes[pollId] = optionId;
               }
   
-              // Persist changes
               saveUserVotes(state.userVotes);
               savePolls(current(state).polls);
           }
         }
-      },
+    },
     addPoll: (state, action: PayloadAction<{ question: string; options: string[] }>) => {
       const { question, options } = action.payload;
       const newPoll: Poll = {
@@ -161,6 +161,18 @@ const pollsSlice = createSlice({
       state.polls.push(newPoll);
       savePolls(current(state).polls);
     },
+    editPoll: (state, action: PayloadAction<{ id: number; question: string; options: string[] }>) => {
+        const { id, question, options } = action.payload;
+        const pollToEdit = state.polls.find(poll => poll.id === id);
+        if (pollToEdit) {
+            pollToEdit.question = question;
+            pollToEdit.options = options.map((text, index) => {
+                const existingOption = pollToEdit.options[index];
+                return existingOption ? { ...existingOption, text } : { id: index + 1, text, votes: 0 };
+            });
+            savePolls(current(state).polls);
+        }
+    },
     deletePoll: (state, action: PayloadAction<number>) => {
         state.polls = state.polls.filter(poll => poll.id !== action.payload);
         delete state.userVotes[action.payload];
@@ -170,5 +182,5 @@ const pollsSlice = createSlice({
   },
 });
 
-export const { vote, addPoll, deletePoll } = pollsSlice.actions;
+export const { vote, addPoll, editPoll, deletePoll } = pollsSlice.actions;
 export default pollsSlice.reducer;
