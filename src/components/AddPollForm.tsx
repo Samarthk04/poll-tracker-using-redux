@@ -17,30 +17,21 @@ const AddPollForm: React.FC<AddPollFormProps> = ({ setShowForm }) => {
     setOptions(newOptions);
   };
 
-  /**
-   * Adds a new, empty option field to the form.
-   */
   const addOptionField = () => {
     setOptions([...options, '']);
   };
 
-  /**
-   * Removes an option field from the form.
-   */
   const removeOptionField = (index: number) => {
     const newOptions = options.filter((_, i) => i !== index);
     setOptions(newOptions);
   };
 
-  /**
-   * Handles form submission to create a new poll.
-   */
+ 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Ensure question and all options are not empty
     if (question.trim() && options.every(opt => opt.trim())) {
       dispatch(addPoll({ question, options: options.map(opt => opt.trim()) }));
-      setShowForm(false); // Hide form on successful submission
+      setShowForm(false); 
     }
   };
 

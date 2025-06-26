@@ -22,12 +22,10 @@ interface PollsState {
 const defaultPolls: Poll[] = [
     {
       id: 1,
-      question: 'What is your favorite programming language?',
+      question: 'Demo',
       options: [
-        { id: 1, text: 'JavaScript', votes: 5 },
-        { id: 2, text: 'Python', votes: 10 },
-        { id: 3, text: 'Java', votes: 3 },
-        { id: 4, text: 'TypeScript', votes: 8 },
+        { id: 1, text: 'demo1', votes: 5 },
+        { id: 2, text: 'demo2', votes: 10 },
       ],
       totalVotes: 26,
       userVoted: null,
