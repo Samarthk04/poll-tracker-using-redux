@@ -11,12 +11,12 @@ export interface Poll {
   question: string;
   options: PollOption[];
   totalVotes: number;
-  userVoted: number | null; 
+  userVoted: number | null;
 }
 
 interface PollsState {
   polls: Poll[];
-  userVotes: { [pollId: number]: number }; 
+  userVotes: { [pollId: number]: number };
 }
 
 const defaultPolls: Poll[] = [
@@ -122,21 +122,37 @@ const pollsSlice = createSlice({
   initialState,
   reducers: {
     vote: (state, action: PayloadAction<{ pollId: number; optionId: number }>) => {
-      const { pollId, optionId } = action.payload;
-      const poll = state.polls.find((p) => p.id === pollId);
-
-      if (poll && poll.userVoted === null) {
-        const option = poll.options.find((o) => o.id === optionId);
-        if (option) {
-          option.votes += 1;
-          poll.totalVotes += 1;
-          poll.userVoted = optionId; 
-          state.userVotes[pollId] = optionId; 
-          saveUserVotes(state.userVotes); 
-          savePolls(current(state).polls);
+        const { pollId, optionId } = action.payload;
+        const poll = state.polls.find((p) => p.id === pollId);
+  
+        if (poll) {
+          const newOption = poll.options.find((o) => o.id === optionId);
+  
+          if (newOption) {
+              // If user has already voted, undo the previous vote
+              if (poll.userVoted !== null && poll.userVoted !== optionId) {
+                  const oldOption = poll.options.find((o) => o.id === poll.userVoted);
+                  if (oldOption) {
+                      oldOption.votes -= 1;
+                  }
+              } else if (poll.userVoted === null) {
+                  // If it's a new vote, increment total votes
+                  poll.totalVotes += 1;
+              }
+  
+              // Apply the new vote if it's different from the current one
+              if (poll.userVoted !== optionId) {
+                newOption.votes += 1;
+                poll.userVoted = optionId;
+                state.userVotes[pollId] = optionId;
+              }
+  
+              // Persist changes
+              saveUserVotes(state.userVotes);
+              savePolls(current(state).polls);
+          }
         }
-      }
-    },
+      },
     addPoll: (state, action: PayloadAction<{ question: string; options: string[] }>) => {
       const { question, options } = action.payload;
       const newPoll: Poll = {
@@ -149,8 +165,14 @@ const pollsSlice = createSlice({
       state.polls.push(newPoll);
       savePolls(current(state).polls);
     },
+    deletePoll: (state, action: PayloadAction<number>) => {
+        state.polls = state.polls.filter(poll => poll.id !== action.payload);
+        delete state.userVotes[action.payload];
+        savePolls(current(state).polls);
+        saveUserVotes(state.userVotes);
+    },
   },
 });
 
-export const { vote, addPoll } = pollsSlice.actions;
+export const { vote, addPoll, deletePoll } = pollsSlice.actions;
 export default pollsSlice.reducer;

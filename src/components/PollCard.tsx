@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { vote, Poll as PollType } from '../redux/pollsSlice';
+import { vote, deletePoll, Poll as PollType } from '../redux/pollsSlice';
 
 interface PollCardProps {
   poll: PollType;
@@ -10,13 +10,13 @@ const PollCard: React.FC<PollCardProps> = ({ poll }) => {
   const dispatch = useDispatch();
   const hasVoted = poll.userVoted !== null;
 
-  /**
-   * Dispatches the vote action when an option is clicked.
-   * @param optionId - The ID of the selected option.
-   */
   const handleVote = (optionId: number) => {
-    if (!hasVoted) {
-      dispatch(vote({ pollId: poll.id, optionId }));
+    dispatch(vote({ pollId: poll.id, optionId }));
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this poll?')) {
+      dispatch(deletePoll(poll.id));
     }
   };
 
@@ -37,13 +37,10 @@ const PollCard: React.FC<PollCardProps> = ({ poll }) => {
             <div key={option.id}>
               <button
                 onClick={() => handleVote(option.id)}
-                disabled={hasVoted}
                 className={`w-full text-left p-3 rounded-lg transition-colors duration-300 ${
-                  hasVoted
-                    ? isSelected
+                    isSelected
                       ? 'bg-blue-200 border-2 border-blue-500'
-                      : 'bg-gray-100 cursor-not-allowed'
-                    : 'bg-gray-200 hover:bg-gray-300'
+                      : 'bg-gray-200 hover:bg-gray-300'
                 }`}
               >
                 <div className="flex justify-between items-center">
@@ -55,7 +52,6 @@ const PollCard: React.FC<PollCardProps> = ({ poll }) => {
                   )}
                 </div>
               </button>
-              {/* Progress bar shown after voting */}
               {hasVoted && (
                 <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1 overflow-hidden">
                   <div
@@ -68,8 +64,15 @@ const PollCard: React.FC<PollCardProps> = ({ poll }) => {
           );
         })}
       </div>
-      <div className="mt-4 text-right text-gray-500 font-medium">
-        Total Votes: {poll.totalVotes}
+      <div className="mt-4 flex justify-between items-center">
+        <div className="text-gray-500 font-medium">
+            Total Votes: {poll.totalVotes}
+        </div>
+        <div className="flex gap-2">
+            <button onClick={handleDelete} className="bg-red-500 text-white font-bold py-1 px-3 rounded-lg hover:bg-red-600 text-sm">
+                Delete
+            </button>
+        </div>
       </div>
     </div>
   );
