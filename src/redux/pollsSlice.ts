@@ -95,7 +95,7 @@ const loadUserVotes = (): { [pollId: number]: number } => {
 
 /**
  * save the user's voting history to localStorage.
- * @param userVotes 
+ * @param userVotes   
  */
 const saveUserVotes = (userVotes: { [pollId: number]: number }) => {
   try {
